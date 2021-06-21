@@ -59,13 +59,10 @@ $ chmod 600 ghAccessToken
 ## Usage
 
 ```sh 
-$ gitinit -t token -u muse-sisay -r sampleRepo
+$ gitinit -t token -u muse-sisay -r sampleRepo -l mit
 ```
 
 This will create a `sampleRepo` repository on github.
 
 ## TODO 
 - [ ] Securely store Access Token
-
-## Disclaimer 
-**Your Access Token with appear in your shell history!**

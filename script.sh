@@ -1,5 +1,11 @@
 #!/bin/sh
  
+LICENSES=("agpl-3.0" "apache-2.0" \
+        "bsd-2-clause" "bsd-3-clause"\
+        "bsl-1.0" "cc0-1.0" "epl-2.0" \
+        "gpl-2.0" "gpl-3.0" "lgpl-2.1"\
+         "mit" "mpl-2.0" "unlicense" )
+
 function usage() # [] or () or <> , which one is optional
 {
     echo "Syntax: gitinit -t ACCESSTOKEN -u gh_username -r repo_name [ -p PROJECT TITLE ] [ -d path ]"
@@ -17,7 +23,7 @@ function usage() # [] or () or <> , which one is optional
     exit 2
 }
 
-while getopts 'st:u:r:p:d:h' args
+while getopts 'sl::u:r:p:d:h' args
 do 
     case $args in 
         u) 
@@ -28,6 +34,9 @@ do
         ;;
         p) 
            project_title=$OPTARG
+        ;;
+        l)
+            license=$OPTARG
         ;;
         d) 
             loc=$OPTARG
@@ -41,12 +50,11 @@ do
     esac
 done 
 
-# (read) Access/api token
- api_token=$(cat ~/.ssh/ghAccessToken)
-
 # Check args 
+# repo name is setup
 [ -z "$repo_name" ] && usage
 
+# username is setup
 if [ -z "$user_name" ]; then 
     # Read  git username from git config
     user_name=$(awk '/name/ {print $3}' ~/.gitconfig)
@@ -56,6 +64,18 @@ if [ -z "$user_name" ]; then
         usage
     fi
 fi 
+
+# valid license is passed
+if [ ! -z $license ] && [[ ! " ${LICENSES[@]} " =~ " ${license} " ]]; then
+    echo "Invalid license \"$license\""
+    echo "License should be one of the following [${LICENSES[*]}]"
+    exit 2
+fi
+
+# (read) Access/api token
+ api_token=$(cat ~/.ssh/ghAccessToken)
+
+
 
 # Assign repo name to project title, if missing 
 if [ -z "$project_title" ]; then 
@@ -94,9 +114,14 @@ fi
 git init
 git remote add origin git@github.com:"$user_name"/"$repo_name".git
 
-echo "# $project_title" > README.md
 
-git add README.md
+echo "# $project_title" > README.md
+if [ ! -z $license ]; then 
+    curl -s -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/licenses/$license | jq -r .body > LICENSE
+fi 
+
+git add README.md LICENSE
 git commit -m "intial commit"
 
 git push -u origin master
