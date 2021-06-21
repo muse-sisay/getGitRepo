@@ -11,7 +11,6 @@ function usage() # [] or () or <> , which one is optional
     echo "   h     Print this Help."
     echo
     echo "   arguments:"
-    echo "   -t ACCESSTOKEN"
     echo "   -u USERNAME "
     echo "   -r REPO NAME "
     echo -e "   -p PROJECT TITLE  h1 displayed on README.md. Default is REPO NAME"
@@ -21,9 +20,6 @@ function usage() # [] or () or <> , which one is optional
 while getopts 'st:u:r:p:d:h' args
 do 
     case $args in 
-        t) 
-            api_token=$OPTARG
-        ;;
         u) 
             user_name=$OPTARG
         ;;
@@ -45,8 +41,10 @@ do
     esac
 done 
 
+# (read) Access/api token
+ api_token=$(cat ~/.ssh/ghAccessToken)
+
 # Check args 
-[ -z "$api_token" ] && usage
 [ -z "$repo_name" ] && usage
 
 if [ -z "$user_name" ]; then 

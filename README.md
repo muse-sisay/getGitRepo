@@ -46,7 +46,15 @@ Host github.com
 
 You can get a "personal access token in GitHub" by going to `Settings->Developer Settings-> Personal Access Tokens->Generate new token`. (select repo scope, or it won't work). # Edit this
 
-Save your Access Token!!
+#### Save Access Token
+
+Create `ghAccessToken` in `~/.ssh` and place your access token inside `ghAccessToken`. Change permission to 600 so that only your user account has read and write access.  
+
+```sh
+$ cd ~/.ssh
+$ touch ghAccessToken
+$ chmod 600 ghAccessToken
+```
 
 ## Usage
 
