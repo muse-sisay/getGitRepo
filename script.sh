@@ -6,7 +6,7 @@ function usage() # [] or () or <> , which one is optional
   exit 2
 }
 
-while getopts 't:u:r:p:d:h' args
+while getopts 'st:u:r:p:d:h' args
 do 
     case $args in 
         t) 
@@ -23,6 +23,9 @@ do
         ;;
         d) 
             loc=$OPTARG
+        ;;
+        s) 
+            private_repo=",\"private\" : true"
         ;;
         h |  *)
             usage
@@ -60,10 +63,9 @@ fi
 mkdir "$repo_name"
 cd "$repo_name"
 
-
 if [ $(curl -s -o /dev/null -w "%{http_code}" \
                 -H "Authorization: token $api_token" "https://api.github.com/user/repos" \
-                -d "{\"name\": \"${repo_name}\"}") -ne 201 ]; then
+                -d "{\"name\": \"${repo_name}\" ${private_repo}}") -ne 201 ]; then
 
     exit 5
 fi
