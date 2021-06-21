@@ -2,8 +2,20 @@
  
 function usage() # [] or () or <> , which one is optional
 {
-  echo "Usage: $0 -t ACCESSTOKEN -u gh_username -r repo_name [ -p PROJECT TITLE ] [ -d path ]" >&2
-  exit 2
+    echo "Syntax: gitinit -t ACCESSTOKEN -u gh_username -r repo_name [ -p PROJECT TITLE ] [ -d path ]"
+    echo
+    echo "   A tool to intialize a git repo and push inital commit to github."
+    echo
+    echo "   options:"
+    echo "   s     Setup Private Repository."
+    echo "   h     Print this Help."
+    echo
+    echo "   arguments:"
+    echo "   -t ACCESSTOKEN"
+    echo "   -u USERNAME "
+    echo "   -r REPO NAME "
+    echo -e "   -p PROJECT TITLE  h1 displayed on README.md. Default is REPO NAME"
+    exit 2
 }
 
 while getopts 'st:u:r:p:d:h' args
