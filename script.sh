@@ -47,8 +47,17 @@ done
 
 # Check args 
 [ -z "$api_token" ] && usage
-[ -z "$user_name" ] && usage
 [ -z "$repo_name" ] && usage
+
+if [ -z "$user_name" ]; then 
+    # Read  git username from git config
+    user_name=$(awk '/name/ {print $3}' ~/.gitconfig)
+
+    if [ -z "$user_name" ]; then 
+        echo "user_name is missing"
+        usage
+    fi
+fi 
 
 # Assign repo name to project title, if missing 
 if [ -z "$project_title" ]; then 
@@ -78,7 +87,8 @@ cd "$repo_name"
 if [ $(curl -s -o /dev/null -w "%{http_code}" \
                 -H "Authorization: token $api_token" "https://api.github.com/user/repos" \
                 -d "{\"name\": \"${repo_name}\" ${private_repo}}") -ne 201 ]; then
-
+    
+    echo "Unable to create remote repo."
     exit 5
 fi
 
