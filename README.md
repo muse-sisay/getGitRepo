@@ -4,9 +4,23 @@
 
 <p align="center"> <strong>gitinit</strong> is a bash script for creating an empty repo and pushing an intial commit to github.</p>
 
+## Feature
+
+- create private repository
+- save license file
+- configure git config on repository basis
+- password-less operation
+
 [Installation](#installation) | [Setup](#setup) | [Usage](#usage)
 
 ## Installation 
+
+Setting gitinit is as simple cloning the repo, saving your SSH key on github, generating "Personal Access Token" and running the script.  
+
+Install jq, cli json parser
+```sh
+$ sudo apt instal jq
+```
 
 Clone the repo to your local machine 
 ```sh
@@ -26,18 +40,19 @@ replace `muse-sisay` with your Github username. Only used for identification pur
 
 ```sh
 $ cd ~/.ssh
-$ ssh-keygen -f github-musesisay
+$ ssh-keygen -f github-muse-sisay
 ```
 
-[Github guide](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+Follow the [Github guide](https://docs.github.com/en/github/authenticating-to-github/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account) to add your public key to your github account.
 
 ### Edit ssh config
 
-Add this to your `~/.ssh/config`. Replace IdentityFile with the one you created. This will allow you to push commits with out providing a password.
+Add this to your `~/.ssh/config`. Replace IdentityFile with the one you created. This will allow you to push commits with out providing a password. `Host` directive should be github- plus your username `github-{username}`.
 
 ```text
-Host github.com
-    IdentityFile ~/.ssh/github-musesisay
+Host github-muse-sisay
+    Hostname github.com
+    IdentityFile ~/.ssh/github-muse-sisay
     IdentitiesOnly yes
     Port 22
 ```
@@ -58,11 +73,31 @@ $ chmod 600 ghAccessToken
 
 ## Usage
 
+
 ```sh 
-$ gitinit -t token -u muse-sisay -r sampleRepo -l mit
+$ gitinit -l mit sampleRepo
+```
+This will create a `sampleRepo` with `MIT` License on Github.
+
+
+```sh
+$ gitinit -l gpl-3.0 -u abebe workRepo
 ```
 
-This will create a `sampleRepo` repository on github.
+Will create `workRepo` with `gpl-3.0` License on `abebe's` Github. If you haven't setup an ssh key-pair and made an edit to ~/.ssh/config .... go ahead folllow [setup](#setup) do it. The Hostname directive in this case would be github-abebe.
+
+```sh
+$ cd ~/.ssh
+$ ssh-keygen -f github-abebe
+```
+
+```text
+Host github-abebe
+    Hostname github.com
+    IdentityFile ~/.ssh/github-abebe
+    IdentitiesOnly yes
+    Port 22
+```
 
 ## TODO 
-- [ ] Securely store Access Token
+- [x] Securely store Access Token (hopefully it's secure)
