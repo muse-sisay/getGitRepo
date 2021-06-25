@@ -4,7 +4,7 @@ LICENSES=("agpl-3.0" "apache-2.0" "bsd-2-clause" "bsd-3-clause" \
         "bsl-1.0" "cc0-1.0" "epl-2.0" "gpl-2.0" "gpl-3.0" "lgpl-2.1" \
          "mit" "mpl-2.0" "unlicense" )
 
-USAGE="Syntax: gitinit  [-s] [-u GH_USERNAME] [-p PROJECT TITLE] [-l LICENSE] [-d PATH] \"Repository-name\""
+USAGE="Syntax: gitinit  [-s] [-u GH_USERNAME] [-a AUTHOR] [-p PROJECT TITLE] [-l LICENSE] [-d PATH] \"Repository-name\""
 
 function usage()
 {
@@ -22,6 +22,7 @@ function help(){
     echo " options:"
     echo "  - h    Print this Help."
     echo "  - u    git USERNAME "
+    echo "  - a    Author"
     echo "  - p    PROJECT TITLE  heading displayed on README.md. Defaults to repository-name"
     echo "  - s    set as a private repository."
     echo
@@ -107,13 +108,48 @@ function create_local_repo_path(){
 
 }
 
+function replace_info () { # comeup with a better naming
+    
+     year=$(date "+%Y")
+            
+    # Replace year
+    sed -i '' "s/\[year\]/$year/" $license_file
+
+    # Replace author
+    if [ ! -z $author ]; then 
+        
+        sed -i '' "s/\[fullname\]/${author}/" $license_file
+    else 
+        sed -i '' "s/\[fullname\]/${git_user}/" $license_file
+    fi
+}
+
+function save_license(){
+    
+    license_file="LICENSE"
+
+    if [ $license == "gpl-3.0" ]; then 
+        license_file="COPYING"
+    elif [ $license == "unlicense" ]; then
+        license_file="UNLICENSE"
+    fi # maybe should have had an else here
+
+    curl -s -H "Accept: application/vnd.github.v3+json" \
+        https://api.github.com/licenses/$license | jq -r .body > $license_file
+
+    
+    # replace year and author name
+    if [[ $license == "bsd-2-clause" || $license == "bsd-3-clause" || $license == "mit" ]]; then
+            replace_info
+    fi
+}
+
 function create_project_files(){
 
     echo "# $project_title" > README.md
 
     if [ ! -z $license ]; then 
-        curl -s -H "Accept: application/vnd.github.v3+json" \
-            https://api.github.com/licenses/$license | jq -r .body > LICENSE
+        save_license
     fi 
 }
 
@@ -128,17 +164,20 @@ function intialize_repo(){
 
     git remote add origin git@"github-${git_user}":"$git_user"/"$repo_name".git
 
-    git add README.md LICENSE
+    git add .
     git commit -m "intial commit"
 }
 
 # /////////////////////////////////////////////
 # ////////////////////////////////////////////
 
-while getopts 'sl:u:p:d:h' args "${@:1:$#-1}" ;do 
+while getopts 'sl:u:a:p:d:h' args "${@:1:$#-1}" ;do 
     case $args in 
         u) 
             git_user=$OPTARG
+        ;;
+        a)  
+            author=$OPTARG
         ;;
         p) 
            project_title=$OPTARG
