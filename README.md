@@ -15,9 +15,9 @@
 
 ## Installation 
 
-Setting gitinit is as simple cloning the repo, saving your SSH key on github, generating "Personal Access Token" and running the script.  
+Setting gitinit is as simple cloning as the repo, saving your SSH key on github, generating "Personal Access Token" and then running the script.  
 
-Install jq, cli json parser
+Install **jq**, cli json parser
 ```sh
 $ sudo apt instal jq
 ```
@@ -27,7 +27,7 @@ Clone the repo to your local machine
 $ git clone https://github.com/muse-sisay/getGitRepo.git 
 ```
 
-create an alias (in `~/.bashrc` if you are using BASH)
+Create an alias (in `~/.bashrc` if you are using BASH)
 ```bash
 alias gitinit="bash /path/to/script/script.sh
 ```
@@ -36,7 +36,7 @@ alias gitinit="bash /path/to/script/script.sh
 
 ### Generate SSH key 
 
-replace `muse-sisay` with your Github username. Only used for identification purpose. 
+It's a good practice to append the filename with your Github username.
 
 ```sh
 $ cd ~/.ssh
@@ -47,7 +47,7 @@ Follow the [Github guide](https://docs.github.com/en/github/authenticating-to-gi
 
 ### Edit ssh config
 
-Add this to your `~/.ssh/config`. Replace IdentityFile with the one you created. This will allow you to push commits with out providing a password. `Host` directive should be github- plus your username `github-{username}`.
+Add this to your `~/.ssh/config`. Change `IdentityFile` directive with the one you created in the previous step. `Host` directive should also be changed to github- plus your username (i.e `github-username`.) This is important as the script uses this to identify the correct private key to use.
 
 ```text
 Host github-muse-sisay
@@ -80,11 +80,15 @@ $ gitinit -l mit sampleRepo
 This will create a `sampleRepo` with `MIT` License on Github.
 
 
+#### Creating as another user
+
 ```sh
 $ gitinit -l gpl-3.0 -u abebe workRepo
 ```
 
-Will create `workRepo` with `gpl-3.0` License on `abebe's` Github. If you haven't setup an ssh key-pair and made an edit to ~/.ssh/config .... go ahead folllow [setup](#setup) do it. The Hostname directive in this case would be github-abebe.
+This will create `workRepo` with `gpl-3.0` License on `abebe's` Github. 
+
+If you haven't setup an ssh key-pair and made an edit to ~/.ssh/config for `abebe` ... go ahead folllow this [setup](#setup). The `host` directive in this case would be github-abebe.
 
 ```sh
 $ cd ~/.ssh

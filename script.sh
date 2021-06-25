@@ -165,7 +165,7 @@ function intialize_repo(){
     git remote add origin git@"github-${git_user}":"$git_user"/"$repo_name".git
 
     git add .
-    git commit -m "intial commit"
+    git commit -m "initial commit"
 }
 
 # /////////////////////////////////////////////
